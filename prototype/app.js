@@ -27,9 +27,9 @@ const scenarios = {
   },
   multiTenant: {
     label: "Rare: multiple tenants",
-    email: "admin@bcompany.biz",
-    tenant: "BCompany",
-    tenants: ["BCompany", "Dynamics Team"],
+    email: "admin@northstar.example",
+    tenant: "Northstar",
+    tenants: ["Northstar", "Delta Team"],
     authMethod: "sso",
     note: "Tenant selection is only shown when one email can access more than one tenant.",
     outcome: "mcpEnabled",
@@ -38,9 +38,9 @@ const scenarios = {
   },
   emailAuth: {
     label: "Existing email-auth user",
-    email: "arjen@hartogharten.nl",
-    tenant: "HartoGharten",
-    tenants: ["HartoGharten"],
+    email: "alex@evergreen.example",
+    tenant: "Evergreen",
+    tenants: ["Evergreen"],
     authMethod: "email",
     note: "The user signs in with a Templafy email/password authentication method.",
     outcome: "mcpEnabled",
@@ -73,7 +73,7 @@ const scenarios = {
   },
   noAgents: {
     label: "Existing user, no agents",
-    email: "free@hartogharten.nl",
+    email: "sam@paperplane.example",
     tenant: "Freemium tenant",
     tenants: ["Freemium tenant"],
     authMethod: "email",
@@ -84,7 +84,7 @@ const scenarios = {
   },
   unknown: {
     label: "Unknown user",
-    email: "amelie@hartogharten.nl",
+    email: "taylor@brightlane.example",
     tenant: "Freemium tenant",
     tenants: [],
     authMethod: "signup",
