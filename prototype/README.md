@@ -1,0 +1,33 @@
+# Templafy MCP OAuth Prototype
+
+Open `index.html` in a browser.
+
+Useful direct routes:
+
+- `index.html#directory` - connector directory
+- `index.html#detail` - Templafy connector detail
+- `index.html#authChoice` - email-first Templafy identification
+- `index.html#selectTenant` - rare account selector for users with multiple tenants
+- `index.html#loginMethod` - login method selection after identification
+- `index.html#login` - email/password login after identification
+- `index.html#tenantCheck` - optional engineering view of the customer capability decision
+- `index.html#signup` - freemium free-product signup page
+- `index.html#profile` - optional direct route showing that email verification is enough
+- `index.html#consent` - rare consent branch
+- `index.html#connected` - connected return page
+
+Prototype paths:
+
+- Existing customer with MCP enabled: choose `Existing customer`, enter email, select SSO, then connect.
+- Existing enterprise SSO user with multiple tenants: choose `Rare: tenants`, enter email, select account, select SSO, then connect.
+- Existing email-auth user: choose `Email auth`, enter email, select email login, then connect.
+- Agents active, no consent needed: choose `Agents ok`, enter email, authenticate, then connect.
+- Agents active, consent needed: choose `Rare: consent`, enter email, authenticate, then allow access.
+- Existing user with no agents: choose `No agents`, enter email, authenticate, then route to the free-product flow.
+- Unknown user: choose `Free product` or click `Start free product`, verify the email link, then enter the free product. Internally this creates a freemium tenant.
+
+Case B behavior:
+
+- Document Agents active means no setup blocker.
+- Consent is shown only if the tenant still needs it.
+- The user-facing screen says Templafy will notify the customer team, while the implementation details sit in sticky-note annotations.
