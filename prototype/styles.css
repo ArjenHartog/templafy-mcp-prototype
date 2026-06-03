@@ -353,6 +353,19 @@ button {
   font-weight: 700;
 }
 
+.flow-paths-button {
+  position: absolute;
+  left: 32px;
+  top: 76px;
+  height: 38px;
+  border: 1px solid rgb(255 255 255 / 22%);
+  border-radius: 8px;
+  background: rgb(255 255 255 / 10%);
+  color: white;
+  padding: 0 14px;
+  font-weight: 700;
+}
+
 .flow-title {
   position: absolute;
   right: 34px;
@@ -941,6 +954,44 @@ button {
   color: var(--muted);
 }
 
+.paths-card {
+  max-width: 680px;
+}
+
+.path-list {
+  display: grid;
+  gap: 12px;
+}
+
+.path-option {
+  width: 100%;
+  min-height: 78px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8f7f4;
+  text-align: left;
+}
+
+.path-option:hover {
+  background: #efeee9;
+}
+
+.path-option strong,
+.path-option small {
+  display: block;
+}
+
+.path-option small {
+  margin-top: 5px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
 .form {
   display: flex;
   flex-direction: column;
@@ -1376,6 +1427,12 @@ button {
   gap: 10px;
   align-items: center;
   flex-wrap: wrap;
+}
+
+.prototype-shortcut {
+  display: block;
+  margin: 14px auto 0;
+  font-size: 13px;
 }
 
 @media (max-width: 980px) {

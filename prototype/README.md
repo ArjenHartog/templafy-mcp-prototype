@@ -5,6 +5,7 @@ Open `index.html` in a browser.
 Useful direct routes:
 
 - `index.html#flow` - full left-to-right flow map
+- `index.html#paths` - prototype path picker
 - `index.html#directory` - connector directory
 - `index.html#detail` - Templafy connector detail
 - `index.html#signup` - single landing page for free product and existing-customer access

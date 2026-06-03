@@ -113,9 +113,37 @@ const visibleScenarioIds = [
   "unknown",
 ];
 
+const pathDetails = {
+  mcpEnabled: {
+    title: "Existing customer",
+    description: "Email resolves to a tenant where MCP is already enabled.",
+  },
+  multiTenant: {
+    title: "Rare: multiple tenants",
+    description: "Email resolves to more than one Templafy tenant.",
+  },
+  emailAuth: {
+    title: "Email auth fallback",
+    description: "Existing customer uses Templafy email/password instead of SSO.",
+  },
+  agentsConsent: {
+    title: "Agents enabled but no MCP (v2)",
+    description: "Tenant has Document Agents, MCP is not enabled, and consent is missing.",
+  },
+  noAgents: {
+    title: "No Document Agents",
+    description: "Existing tenant is found, but there is no MCP or Document Agents path.",
+  },
+  unknown: {
+    title: "Free product",
+    description: "No existing customer tenant is found after duplicate checks.",
+  },
+};
+
 const app = document.querySelector("#app");
 const validScreens = new Set([
   "flow",
+  "paths",
   "directory",
   "detail",
   "authChoice",
@@ -195,6 +223,7 @@ function flowScreen() {
         </svg>
 
         <button class="flow-back" type="button" data-action="directory">Connector directory</button>
+        <button class="flow-paths-button" type="button" data-action="paths">Prototype paths</button>
         <div class="flow-title">MCP-MVP2</div>
 
         <article class="flow-node mini-card email-known" style="left: 32px; top: 260px;">
@@ -319,6 +348,39 @@ function directoryScreen() {
       </section>
     </main>
   `;
+}
+
+function pathsScreen() {
+  authShell(`
+    <div class="auth-card paths-card">
+      <h1 class="auth-title">Prototype paths</h1>
+      <p class="auth-subtitle">Choose a path to prefill the landing page with that scenario's email. The flow still resolves the email before routing.</p>
+      <div class="path-list">
+        ${visibleScenarioIds
+          .map((id) => {
+            const detail = pathDetails[id];
+            return `
+              <button class="path-option" type="button" data-scenario="${id}" data-screen="authChoice">
+                <span>
+                  <strong>${detail.title}</strong>
+                  <small>${detail.description}</small>
+                </span>
+                <span aria-hidden="true">→</span>
+              </button>
+            `;
+          })
+          .join("")}
+      </div>
+      <div class="footer-actions">
+        <button class="button-secondary" type="button" data-action="flow">Back to flow board</button>
+      </div>
+    </div>
+  `, [
+    {
+      title: "Demo control",
+      body: "This page is only for navigating the prototype. The user-facing journey still starts from the shared Templafy landing page.",
+    },
+  ]);
 }
 
 function connector(name, description) {
@@ -598,6 +660,7 @@ function signupScreen() {
             <span>Already have an account?</span>
             <button class="link" type="button" data-action="accessTemplafy">Access Templafy</button>
           </div>
+          <button class="link prototype-shortcut" type="button" data-action="paths">Prototype paths</button>
         </aside>
       </section>
     </main>
@@ -898,7 +961,7 @@ function connectedScreen() {
       <h1 class="auth-title">Connected</h1>
       <p class="auth-subtitle">${connectedCopy}</p>
       <button class="button dark wide" data-action="detail">Open desktop app</button>
-      <button class="link standalone" type="button" data-action="authChoice">Try another path</button>
+      <button class="link standalone" type="button" data-action="paths">Try another path</button>
     </div>
   `, notes);
 }
@@ -926,6 +989,7 @@ function render() {
   document.body.dataset.screen = state.screen;
   const screens = {
     flow: flowScreen,
+    paths: pathsScreen,
     directory: directoryScreen,
     detail: detailScreen,
     authChoice: authChoiceScreen,
@@ -968,6 +1032,7 @@ document.addEventListener("click", (event) => {
 
   const action = actionButton.dataset.action;
   if (action === "flow") setScreen("flow");
+  if (action === "paths") setScreen("paths");
   if (action === "directory") setScreen("directory");
   if (action === "detail") setScreen("detail");
   if (action === "authChoice") setScreen("authChoice");
