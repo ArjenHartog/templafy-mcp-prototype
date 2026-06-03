@@ -6,7 +6,7 @@ const ASSETS = {
 };
 
 const state = {
-  screen: "directory",
+  screen: "flow",
   scenario: "mcpEnabled",
   email: "jane@acme.com",
   selectedTenant: "Acme",
@@ -107,6 +107,7 @@ const scenarioShortLabels = {
 
 const app = document.querySelector("#app");
 const validScreens = new Set([
+  "flow",
   "directory",
   "detail",
   "authChoice",
@@ -146,11 +147,148 @@ function setScenario(id) {
   render();
 }
 
+function captureVisibleEmail() {
+  const emailInput = document.querySelector("input[type='email']:not([readonly])");
+  if (emailInput?.value) {
+    state.email = emailInput.value.trim();
+  }
+  return state.email || scenarios.unknown.email;
+}
+
 function logoTile(size = 46) {
   return `
     <span class="logo-tile" style="width:${size}px;height:${size}px">
       <img src="${ASSETS.logo}" alt="Templafy" />
     </span>
+  `;
+}
+
+function flowScreen() {
+  app.innerHTML = `
+    <main class="flow-screen">
+      <section class="flow-board" aria-label="Templafy MCP signup and sign-in flow">
+        <svg class="flow-lines" viewBox="0 0 1800 1040" aria-hidden="true">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z"></path>
+            </marker>
+          </defs>
+          <path d="M 235 310 C 310 310 335 310 405 310"></path>
+          <path d="M 690 310 C 760 310 760 245 830 245"></path>
+          <path d="M 690 310 C 760 310 760 410 830 410"></path>
+          <path d="M 1030 310 C 1120 310 1130 400 1220 400"></path>
+          <path d="M 1030 420 C 1130 420 1140 400 1220 400"></path>
+          <path d="M 1410 400 C 1480 400 1495 300 1570 300"></path>
+          <path d="M 1570 300 C 1640 300 1640 300 1705 300"></path>
+          <path d="M 930 560 C 980 710 1160 705 1230 515"></path>
+          <path d="M 230 380 C 315 640 390 735 500 805"></path>
+          <path d="M 715 805 C 815 805 850 805 950 805"></path>
+        </svg>
+
+        <button class="flow-back" type="button" data-action="directory">Connector directory</button>
+        <div class="flow-title">MCP-MVP2</div>
+
+        <article class="flow-node mini-card email-known" style="left: 32px; top: 260px;">
+          <h2>Connect Templafy</h2>
+          <p>Enter your email once.</p>
+          <label>Email</label>
+          <div class="mini-input">jane@acme.com</div>
+          <button type="button" data-action="authChoice">Next</button>
+          <button class="mini-secondary" type="button" data-scenario="unknown" data-screen="signup">Start free product</button>
+        </article>
+
+        <article class="flow-note" style="left: 245px; top: 112px;">
+          Existing Templafy enterprise user on 1 or more tenants. Tenant selection is shown only for multiple tenants.
+        </article>
+
+        <article class="flow-node auth-window tenant-window" style="left: 430px; top: 255px;">
+          <div class="mini-auth-header">${logoTile(24)} <strong>templafy</strong></div>
+          <h2>Select account</h2>
+          <p>Click on the account you want to authenticate to.</p>
+          <div class="tenant-mini-row"><span>Northstar</span><small>northstar.templafy.com</small><b>›</b></div>
+          <div class="tenant-mini-row"><span>Delta Team</span><small>deltateam.templafy.com</small><b>›</b></div>
+          <button type="button" data-action="selectTenant">Open rare branch</button>
+        </article>
+
+        <article class="flow-label" style="left: 725px; top: 194px;">Existing SSO user</article>
+        <article class="flow-label" style="left: 725px; top: 362px;">Existing email auth user</article>
+        <article class="flow-label" style="left: 725px; top: 540px;">Existing free-product user</article>
+
+        <article class="flow-node provider-window" style="left: 850px; top: 80px;">
+          <div class="provider-logo">Microsoft</div>
+          <h2>Enter password</h2>
+          <p>admin@northstar.example</p>
+          <div class="provider-input">Password</div>
+          <button type="button" data-scenario="multiTenant" data-screen="connected">Sign in</button>
+        </article>
+
+        <article class="flow-node auth-window login-window" style="left: 850px; top: 312px;">
+          <div class="mini-auth-header">${logoTile(24)} <strong>templafy</strong></div>
+          <label>Email address</label>
+          <div class="mini-input readonly">alex@evergreen.example</div>
+          <label>Password</label>
+          <div class="mini-input password">••••••••</div>
+          <button type="button" data-scenario="emailAuth" data-screen="login">Access Templafy</button>
+        </article>
+
+        <article class="flow-node connected-mini" style="left: 900px; top: 560px;">
+          ${logoTile(38)}
+          <h2>Connected</h2>
+          <p>Taking you back to Claude.</p>
+          <button type="button" data-action="connected">Open desktop app</button>
+        </article>
+
+        <article class="flow-note decision-note" style="left: 1225px; top: 332px;">
+          If Document Agents are active, proceed. Otherwise go to the free product flow.
+        </article>
+
+        <article class="flow-node consent-mini" style="left: 1490px; top: 205px;">
+          <h2>Templafy Connector is requesting access</h2>
+          <p>Create branded documents and presentations.</p>
+          <button type="button" data-scenario="agentsConsent" data-screen="consent">Allow access</button>
+        </article>
+
+        <article class="flow-note small-note" style="left: 1495px; top: 430px;">
+          Consent is shown only if the tenant has agents but connector consent is missing.
+        </article>
+
+        <article class="flow-node connected-mini" style="left: 1710px; top: 245px;">
+          ${logoTile(38)}
+          <h2>Connected</h2>
+          <p>You can close this tab.</p>
+          <button type="button" data-action="connected">Open desktop app</button>
+        </article>
+
+        <article class="flow-node mini-card lower-email" style="left: 58px; top: 742px;">
+          <h2>Connect Templafy</h2>
+          <p>Email is already known.</p>
+          <div class="mini-input">taylor@brightlane.example</div>
+          <button type="button" data-scenario="unknown" data-screen="signup">Start free product</button>
+        </article>
+
+        <article class="flow-note signup-note" style="left: 305px; top: 750px;">
+          Signup was clicked, user is unknown, or existing tenant does not have Document Agents.
+        </article>
+
+        <article class="flow-node free-product-mini" style="left: 620px; top: 742px;">
+          <h2>Go to free product</h2>
+          <p>No credit card required</p>
+          <div class="known-email">
+            <span>Email</span>
+            <strong>taylor@brightlane.example</strong>
+          </div>
+          <label class="mini-check"><span></span> I agree to the terms.</label>
+          <button type="button" data-scenario="unknown" data-screen="inbox">Get started</button>
+        </article>
+
+        <article class="flow-node connected-mini wide-connected" style="left: 965px; top: 735px;">
+          ${logoTile(44)}
+          <h2>Connected</h2>
+          <p>Taking you back to Claude. You can close this tab.</p>
+          <button type="button" data-action="connected">Open desktop app</button>
+        </article>
+      </section>
+    </main>
   `;
 }
 
@@ -448,7 +586,7 @@ function ssoScreen() {
 }
 
 function signupScreen() {
-  const email = state.scenario === "unknown" ? state.email : "";
+  const email = state.email || scenarios.unknown.email;
   app.innerHTML = `
     <main class="freemium-screen">
       <section class="freemium-shell">
@@ -468,10 +606,12 @@ function signupScreen() {
         </div>
         <aside class="free-product-card">
           <h2>Go to free product</h2>
+          <p class="free-product-subtitle">No credit card required. We will use the email you already entered.</p>
           <form class="form" data-form="signup">
-            <div class="field">
-              <label for="signup-email">Email *</label>
-              <input id="signup-email" type="email" value="${email}" placeholder="Enter your email address" />
+            <div class="known-email-card">
+              <span>Email</span>
+              <strong>${email}</strong>
+              <button class="link" type="button" data-action="authChoice">Use another email</button>
             </div>
             <button class="button" type="submit">Continue with email</button>
             <div class="provider-grid">
@@ -776,6 +916,7 @@ function forgotScreen() {
 
 function render() {
   const screens = {
+    flow: flowScreen,
     directory: directoryScreen,
     detail: detailScreen,
     authChoice: authChoiceScreen,
@@ -797,7 +938,12 @@ function render() {
 document.addEventListener("click", (event) => {
   const scenarioButton = event.target.closest("[data-scenario]");
   if (scenarioButton) {
-    setScenario(scenarioButton.dataset.scenario);
+    applyScenario(scenarioButton.dataset.scenario);
+    if (scenarioButton.dataset.screen) {
+      setScreen(scenarioButton.dataset.screen);
+      return;
+    }
+    render();
     return;
   }
 
@@ -811,6 +957,7 @@ document.addEventListener("click", (event) => {
   if (!actionButton) return;
 
   const action = actionButton.dataset.action;
+  if (action === "flow") setScreen("flow");
   if (action === "directory") setScreen("directory");
   if (action === "detail") setScreen("detail");
   if (action === "authChoice") setScreen("authChoice");
@@ -819,8 +966,8 @@ document.addEventListener("click", (event) => {
   if (action === "login") setScreen("login");
   if (action === "sso") setScreen("sso");
   if (action === "tenantCheck") setScreen("tenantCheck");
-  if (action === "signup") setScreen("signup", { scenario: "unknown", email: state.email || scenarios.unknown.email, selectedTenant: scenarios.unknown.tenant, consentNeeded: false });
-  if (action === "providerSignup") setScreen("inbox", { scenario: "unknown", email: state.email || scenarios.unknown.email, selectedTenant: scenarios.unknown.tenant, consentNeeded: false });
+  if (action === "signup") setScreen("signup", { scenario: "unknown", email: captureVisibleEmail(), selectedTenant: scenarios.unknown.tenant, consentNeeded: false });
+  if (action === "providerSignup") setScreen("inbox", { scenario: "unknown", email: captureVisibleEmail(), selectedTenant: scenarios.unknown.tenant, consentNeeded: false });
   if (action === "forgot") setScreen("forgot");
   if (action === "profile") setScreen("profile", { scenario: "unknown", email: state.email || scenarios.unknown.email, selectedTenant: scenarios.unknown.tenant, consentNeeded: false });
   if (action === "verifyEmail") setScreen("connected", { scenario: "unknown", selectedTenant: scenarios.unknown.tenant, consentNeeded: false });
@@ -835,8 +982,8 @@ document.addEventListener("submit", (event) => {
   const formType = form.dataset.form;
 
   if (formType === "signup") {
-    const input = form.querySelector("input");
-    state.email = input.value || scenarios.unknown.email;
+    const input = form.querySelector("input[type='email']");
+    state.email = input?.value || state.email || scenarios.unknown.email;
     state.scenario = "unknown";
     state.selectedTenant = scenarios.unknown.tenant;
     state.consentNeeded = false;

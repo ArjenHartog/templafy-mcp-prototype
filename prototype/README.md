@@ -4,6 +4,7 @@ Open `index.html` in a browser.
 
 Useful direct routes:
 
+- `index.html#flow` - full left-to-right flow map
 - `index.html#directory` - connector directory
 - `index.html#detail` - Templafy connector detail
 - `index.html#authChoice` - email-first Templafy identification

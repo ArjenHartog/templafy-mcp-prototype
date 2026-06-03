@@ -32,7 +32,7 @@ body,
 
 body {
   color: var(--ink);
-  background: #ededed;
+  background: #040404;
 }
 
 button,
@@ -292,6 +292,371 @@ button {
   padding: 8px 14px;
   font-size: 14px;
   color: #4e4a44;
+}
+
+.flow-screen {
+  min-height: max(100vh, 1120px);
+  overflow: auto;
+  background:
+    radial-gradient(circle, rgb(255 255 255 / 70%) 1px, transparent 1px),
+    #040404;
+  background-size: 108px 108px;
+  color: white;
+}
+
+.flow-board {
+  position: relative;
+  width: 1900px;
+  height: 1060px;
+  margin: 0 auto;
+  zoom: 0.84;
+}
+
+.flow-lines {
+  position: absolute;
+  inset: 0;
+  width: 1900px;
+  height: 1060px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.flow-lines path {
+  fill: none;
+  stroke: #ff1717;
+  stroke-width: 4;
+  marker-end: url("#arrow");
+}
+
+.flow-lines marker path {
+  fill: #ff1717;
+  stroke: none;
+  marker-end: none;
+}
+
+.flow-back {
+  position: absolute;
+  left: 32px;
+  top: 28px;
+  height: 38px;
+  border: 1px solid rgb(255 255 255 / 22%);
+  border-radius: 8px;
+  background: rgb(255 255 255 / 10%);
+  color: white;
+  padding: 0 14px;
+  font-weight: 700;
+}
+
+.flow-title {
+  position: absolute;
+  right: 34px;
+  bottom: 34px;
+  width: 148px;
+  height: 148px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background: linear-gradient(180deg, #4bc7ef, #007ca3);
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: 800;
+}
+
+.flow-node {
+  position: absolute;
+  z-index: 2;
+  color: #191919;
+}
+
+.mini-card,
+.auth-window,
+.provider-window,
+.connected-mini,
+.consent-mini,
+.free-product-mini {
+  background: white;
+  border: 1px solid #d8d5cd;
+  border-radius: 4px;
+  box-shadow: 0 16px 28px rgb(0 0 0 / 38%);
+}
+
+.mini-card {
+  width: 255px;
+  padding: 22px;
+}
+
+.mini-card h2,
+.auth-window h2,
+.provider-window h2,
+.connected-mini h2,
+.consent-mini h2,
+.free-product-mini h2 {
+  margin: 0 0 10px;
+  font-size: 17px;
+}
+
+.mini-card p,
+.auth-window p,
+.provider-window p,
+.connected-mini p,
+.consent-mini p,
+.free-product-mini p {
+  margin: 0 0 12px;
+  color: #5f5a53;
+  line-height: 1.35;
+  font-size: 12px;
+}
+
+.mini-card label,
+.auth-window label {
+  display: block;
+  margin: 0 0 6px;
+  color: #393631;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.mini-input,
+.provider-input {
+  min-height: 34px;
+  border: 1px solid #c5c0b8;
+  border-radius: 4px;
+  background: #fff;
+  color: #423e38;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+.mini-input.readonly {
+  background: #f5f4f0;
+}
+
+.mini-input.password {
+  letter-spacing: 2px;
+}
+
+.flow-node button {
+  min-height: 34px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--blue);
+  color: white;
+  padding: 0 12px;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.flow-node button.mini-secondary {
+  width: 100%;
+  margin-top: 8px;
+  background: #efeee9;
+  color: #312e2a;
+}
+
+.auth-window {
+  width: 315px;
+  padding: 0 18px 18px;
+}
+
+.mini-auth-header {
+  height: 44px;
+  margin: 0 -18px 16px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  background:
+    linear-gradient(135deg, rgb(255 255 255 / 10%), transparent 50%),
+    #282828;
+}
+
+.tenant-window {
+  width: 330px;
+}
+
+.tenant-mini-row {
+  min-height: 58px;
+  margin-top: 9px;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  border: 1px solid #e1ded7;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.tenant-mini-row span,
+.tenant-mini-row small {
+  display: block;
+}
+
+.tenant-mini-row small {
+  margin-top: 3px;
+  color: #756f66;
+  font-size: 10px;
+}
+
+.tenant-mini-row b {
+  grid-row: 1 / 3;
+  grid-column: 2;
+  align-self: center;
+  font-size: 18px;
+}
+
+.tenant-window button {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.provider-window {
+  width: 255px;
+  padding: 22px;
+}
+
+.provider-logo {
+  color: #68645e;
+  font-size: 12px;
+  margin-bottom: 18px;
+}
+
+.provider-window button {
+  float: right;
+  background: #0067b8;
+}
+
+.login-window button {
+  width: 100%;
+}
+
+.flow-note,
+.flow-label {
+  position: absolute;
+  z-index: 3;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #4bc7ef, #027ea4);
+  color: white;
+  box-shadow: 0 14px 22px rgb(0 0 0 / 35%);
+  text-align: center;
+  font-weight: 700;
+}
+
+.flow-note {
+  width: 250px;
+  min-height: 118px;
+  padding: 18px 20px;
+  display: grid;
+  place-items: center;
+  line-height: 1.35;
+}
+
+.flow-label {
+  width: 120px;
+  min-height: 62px;
+  padding: 12px;
+  display: grid;
+  place-items: center;
+  line-height: 1.2;
+}
+
+.decision-note {
+  width: 250px;
+  min-height: 135px;
+  font-size: 17px;
+}
+
+.small-note {
+  width: 235px;
+  min-height: 96px;
+  font-size: 12px;
+}
+
+.signup-note {
+  width: 270px;
+  min-height: 122px;
+  font-size: 19px;
+}
+
+.connected-mini {
+  width: 185px;
+  padding: 24px 18px 18px;
+  text-align: center;
+}
+
+.connected-mini .logo-tile {
+  margin: 0 auto 10px;
+}
+
+.connected-mini button {
+  width: 100%;
+  background: #111;
+}
+
+.wide-connected {
+  width: 285px;
+}
+
+.consent-mini {
+  width: 260px;
+  padding: 18px;
+}
+
+.consent-mini button {
+  width: 100%;
+  background: #20103f;
+}
+
+.free-product-mini {
+  width: 265px;
+  padding: 18px;
+}
+
+.known-email {
+  min-height: 52px;
+  margin: 10px 0;
+  border: 1px solid #d8d5cd;
+  border-radius: 4px;
+  padding: 8px 10px;
+}
+
+.known-email span,
+.known-email strong {
+  display: block;
+}
+
+.known-email span {
+  color: #77736d;
+  font-size: 10px;
+}
+
+.known-email strong {
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.mini-check {
+  display: grid;
+  grid-template-columns: 14px 1fr;
+  gap: 8px;
+  margin: 10px 0;
+  color: #5f5a53;
+  font-size: 10px;
+}
+
+.mini-check span {
+  width: 13px;
+  height: 13px;
+  border: 1px solid #bdb8ae;
+  border-radius: 2px;
+  background: #fff;
+}
+
+.free-product-mini button {
+  width: 100%;
 }
 
 .auth-screen {
@@ -816,8 +1181,36 @@ button {
 }
 
 .free-product-card h2 {
-  margin: 0 0 22px;
+  margin: 0 0 8px;
   font-size: 30px;
+}
+
+.free-product-subtitle {
+  margin: 0 0 22px;
+  color: #625d55;
+  line-height: 1.4;
+}
+
+.known-email-card {
+  border: 1px solid #dedbd4;
+  border-radius: 8px;
+  background: #f6f5f0;
+  padding: 14px;
+}
+
+.known-email-card span,
+.known-email-card strong {
+  display: block;
+}
+
+.known-email-card span {
+  margin-bottom: 4px;
+  color: #716d66;
+  font-size: 13px;
+}
+
+.known-email-card strong {
+  margin-bottom: 10px;
 }
 
 .provider-grid {
