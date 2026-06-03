@@ -1381,6 +1381,26 @@ button {
   line-height: 1.4;
 }
 
+.landing-notice {
+  margin: 0 0 18px;
+  padding: 14px;
+  border: 1px solid #ead48e;
+  border-radius: 8px;
+  background: #fff7d8;
+  color: #3d3420;
+}
+
+.landing-notice strong,
+.landing-notice span {
+  display: block;
+}
+
+.landing-notice span {
+  margin-top: 6px;
+  color: #5b513a;
+  line-height: 1.4;
+}
+
 .known-email-card {
   border: 1px solid #dedbd4;
   border-radius: 8px;

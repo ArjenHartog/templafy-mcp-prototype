@@ -23,8 +23,8 @@ Prototype paths:
 - Existing customer with MCP enabled: choose `Existing customer`, enter email, complete Microsoft sign-in if needed, then connect.
 - Existing enterprise SSO user with multiple tenants: choose `Rare: tenants`, enter email, select account, complete Microsoft sign-in if needed, then connect.
 - Existing email-auth user: choose `Email auth`, enter email, enter password, then connect.
-- Agents enabled but no MCP (v2): choose `Agents enabled but no MCP (v2)`, enter email, authenticate, then allow access only if consent is missing.
-- Existing user with no agents: choose `No agents`, enter email, then route to the free-product flow with the same email.
+- Agents enabled but no MCP (v2): choose `Agents enabled but no MCP (v2)`, authenticate with SSO, then return to the start page with a tenant-not-ready message and free-product option.
+- Existing user with no agents: choose `No agents`, authenticate with SSO, then return to the start page with a tenant-not-ready message and free-product option.
 - Unknown user: choose `Free product` or click `Start free product`, verify the email link, then enter the free product. Internally this creates a freemium tenant.
 
 Case B behavior:

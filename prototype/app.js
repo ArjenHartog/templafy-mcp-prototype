@@ -11,6 +11,7 @@ const state = {
   email: "jane@acme.com",
   selectedTenant: "Acme",
   consentNeeded: false,
+  notice: null,
 };
 
 const scenarios = {
@@ -65,22 +66,24 @@ const scenarios = {
     tenant: "Contoso",
     tenants: ["Contoso"],
     authMethod: "sso",
-    note: "Document Agents are active, but tenant consent is still required.",
+    note: "Document Agents are active, but this tenant is not ready for MCP yet.",
     outcome: "agentsActive",
     agentsActive: true,
     mcpEnabled: false,
-    consentNeeded: true,
+    consentNeeded: false,
+    returnToFreeProduct: true,
   },
   noAgents: {
     label: "Existing user, no agents",
     email: "sam@paperplane.example",
-    tenant: "Freemium tenant",
-    tenants: ["Freemium tenant"],
-    authMethod: "email",
+    tenant: "Paperplane",
+    tenants: ["Paperplane"],
+    authMethod: "sso",
     note: "No MCP-enabled tenant or Document Agents were found, so the user is routed to the free product flow.",
     outcome: "noAgents",
     agentsActive: false,
     mcpEnabled: false,
+    returnToFreeProduct: true,
   },
   unknown: {
     label: "Unknown user",
@@ -128,11 +131,11 @@ const pathDetails = {
   },
   agentsConsent: {
     title: "Agents enabled but no MCP (v2)",
-    description: "Tenant has Document Agents, MCP is not enabled, and consent is missing.",
+    description: "Starts with SSO, then returns to the start page because MCP is not ready.",
   },
   noAgents: {
     title: "No Document Agents",
-    description: "Existing tenant is found, but there is no MCP or Document Agents path.",
+    description: "Starts with SSO, then returns to the start page because there is no MCP path.",
   },
   unknown: {
     title: "Free product",
@@ -175,6 +178,7 @@ function applyScenario(id) {
     email: scenario.email,
     selectedTenant: scenario.tenant,
     consentNeeded: !!scenario.consentNeeded,
+    notice: null,
   });
 }
 
@@ -273,17 +277,17 @@ function flowScreen() {
         </article>
 
         <article class="flow-note decision-note" style="left: 1195px; top: 310px;">
-          After sign-in: MCP enabled connects directly. Agents enabled but no MCP (v2) asks for consent only if needed. Otherwise go to free product.
+          After sign-in: MCP enabled connects directly. If the tenant is not ready for MCP, return to the start page and offer the free product.
         </article>
 
         <article class="flow-node consent-mini" style="left: 1600px; top: 170px;">
-          <h2>Agents enabled but no MCP (v2)</h2>
-          <p>Review connector access only if consent is missing.</p>
-          <button type="button" data-scenario="agentsConsent" data-screen="consent">Allow access</button>
+          <h2>Tenant not ready for MCP</h2>
+          <p>Return to the start page with a free-product invitation.</p>
+          <button type="button" data-scenario="agentsConsent" data-screen="sso">Start with SSO</button>
         </article>
 
         <article class="flow-note small-note" style="left: 1600px; top: 450px;">
-          Consent is shown only if Document Agents are active and connector consent is missing.
+          Message shown after the user has signed in to the existing Templafy tenant.
         </article>
 
         <article class="flow-node connected-mini" style="left: 1850px; top: 184px;">
@@ -294,7 +298,7 @@ function flowScreen() {
         </article>
 
         <article class="flow-note signup-note" style="left: 305px; top: 815px;">
-          Signup clicked, unknown user, or no Document Agents. Keep the same verified email.
+          Signup clicked or unknown user starts here. Existing tenant not ready returns here after sign-in.
         </article>
 
         <article class="flow-node free-product-mini" style="left: 570px; top: 850px;">
@@ -359,8 +363,9 @@ function pathsScreen() {
         ${visibleScenarioIds
           .map((id) => {
             const detail = pathDetails[id];
+            const startScreen = id === "agentsConsent" || id === "noAgents" ? "sso" : "authChoice";
             return `
-              <button class="path-option" type="button" data-scenario="${id}" data-screen="authChoice">
+              <button class="path-option" type="button" data-scenario="${id}" data-screen="${startScreen}">
                 <span>
                   <strong>${detail.title}</strong>
                   <small>${detail.description}</small>
@@ -620,6 +625,7 @@ function ssoScreen() {
 
 function signupScreen() {
   const email = state.email || scenarios.unknown.email;
+  const notice = state.notice;
   app.innerHTML = `
     <main class="freemium-screen">
       <section class="freemium-shell">
@@ -641,12 +647,20 @@ function signupScreen() {
         <aside class="free-product-card">
           <h2>Get started with Templafy</h2>
           <p class="free-product-subtitle">Enter your work email once. Existing customers continue to their tenant; new users can start the free product.</p>
+          ${
+            notice
+              ? `<div class="landing-notice">
+                  <strong>${notice.title}</strong>
+                  <span>${notice.body}</span>
+                </div>`
+              : ""
+          }
           <form class="form" data-form="signup">
             <div class="field landing-email-field">
               <label for="landing-email">Email</label>
               <input id="landing-email" name="email" type="email" value="${email}" placeholder="Enter your work email" autocomplete="email" />
             </div>
-            <button class="button" type="submit">Start free product</button>
+            <button class="button" type="submit">${notice ? "Try the free product" : "Start free product"}</button>
             <div class="provider-grid">
               <button class="button-secondary" type="button" data-action="providerSignup">Continue with Microsoft</button>
               <button class="button-secondary" type="button" data-action="providerSignup">Continue with Google</button>
@@ -703,6 +717,16 @@ function tenantCheckOutcome(scenario) {
     };
   }
 
+  if (scenario.returnToFreeProduct) {
+    return {
+      kicker: "Tenant not ready for MCP",
+      title: "Try the free product",
+      copy: "This Templafy tenant cannot connect to MCP yet. The user can return to the start page and try the free PowerPoint agent.",
+      action: "signup",
+      cta: "Try free product",
+    };
+  }
+
   if (scenario.agentsActive) {
     return {
       kicker: "Templafy Connector",
@@ -736,6 +760,11 @@ function tenantCheckNotes(scenario) {
     notes.push({
       title: "Default customer path",
       body: "If MCP is enabled on the existing tenant, the user continues without setup or consent screens.",
+    });
+  } else if (scenario.returnToFreeProduct) {
+    notes.push({
+      title: "Tenant not ready",
+      body: "The user signs in first. After the tenant check confirms MCP is not available, the start page explains the situation and offers the free product.",
     });
   } else if (scenario.agentsActive && !scenario.consentNeeded) {
     notes.push({
@@ -806,8 +835,12 @@ function resolveScreen() {
     return;
   }
 
-  if (scenario.outcome === "noAgents") {
-    setScreen("signup", { scenario: "unknown", selectedTenant: scenarios.unknown.tenant, consentNeeded: false });
+  if (scenario.returnToFreeProduct) {
+    setScreen("signup", {
+      selectedTenant: scenario.tenant,
+      consentNeeded: false,
+      notice: tenantNotReadyNotice(scenario),
+    });
     return;
   }
 
@@ -819,6 +852,24 @@ function resolveScreen() {
   setScreen("connected");
 }
 
+function tenantNotReadyNotice(scenario) {
+  return {
+    type: "tenantNotReady",
+    title: "Your Templafy tenant is not ready for MCP yet",
+    body: `${scenario.tenant} cannot connect to this MCP experience right now. You can still try our free product with this email.`,
+  };
+}
+
+function startFreeProduct(email) {
+  setScreen("inbox", {
+    scenario: "unknown",
+    email: email || state.email || scenarios.unknown.email,
+    selectedTenant: scenarios.unknown.tenant,
+    consentNeeded: false,
+    notice: null,
+  });
+}
+
 function continueFromResolvedEmail(email, fallbackScreen = "signup") {
   const scenario = chooseScenarioFromEmail(email);
   const nextScreen = nextAuthScreen(scenario);
@@ -828,6 +879,7 @@ function continueFromResolvedEmail(email, fallbackScreen = "signup") {
       scenario: "unknown",
       selectedTenant: scenarios.unknown.tenant,
       consentNeeded: false,
+      notice: null,
     });
     return;
   }
@@ -837,11 +889,11 @@ function continueFromResolvedEmail(email, fallbackScreen = "signup") {
     return;
   }
 
-  setScreen(nextScreen);
+  setScreen(nextScreen, { notice: null });
 }
 
 function nextAuthScreen(scenario) {
-  if (scenario.outcome === "unknown" || scenario.outcome === "noAgents") {
+  if (scenario.outcome === "unknown") {
     return "signup";
   }
 
@@ -1041,9 +1093,15 @@ document.addEventListener("click", (event) => {
   if (action === "login") setScreen("login");
   if (action === "sso") setScreen("sso");
   if (action === "tenantCheck") setScreen("tenantCheck");
-  if (action === "signup") setScreen("signup", { scenario: "unknown", email: captureVisibleEmail(), selectedTenant: scenarios.unknown.tenant, consentNeeded: false });
+  if (action === "signup") setScreen("signup", { scenario: "unknown", email: captureVisibleEmail(), selectedTenant: scenarios.unknown.tenant, consentNeeded: false, notice: null });
   if (action === "accessTemplafy") continueFromResolvedEmail(captureVisibleEmail());
-  if (action === "providerSignup") continueFromResolvedEmail(captureVisibleEmail(), "inbox");
+  if (action === "providerSignup") {
+    if (state.notice?.type === "tenantNotReady") {
+      startFreeProduct(captureVisibleEmail());
+    } else {
+      continueFromResolvedEmail(captureVisibleEmail(), "inbox");
+    }
+  }
   if (action === "forgot") setScreen("forgot");
   if (action === "profile") setScreen("profile", { scenario: "unknown", email: state.email || scenarios.unknown.email, selectedTenant: scenarios.unknown.tenant, consentNeeded: false });
   if (action === "verifyEmail") setScreen("connected", { scenario: "unknown", selectedTenant: scenarios.unknown.tenant, consentNeeded: false });
@@ -1059,7 +1117,12 @@ document.addEventListener("submit", (event) => {
 
   if (formType === "signup") {
     const input = form.querySelector("input[type='email']");
-    continueFromResolvedEmail(input?.value || state.email || scenarios.unknown.email, "inbox");
+    const email = input?.value || state.email || scenarios.unknown.email;
+    if (state.notice?.type === "tenantNotReady") {
+      startFreeProduct(email);
+    } else {
+      continueFromResolvedEmail(email, "inbox");
+    }
     return;
   }
 
