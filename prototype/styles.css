@@ -35,6 +35,11 @@ body {
   background: #040404;
 }
 
+body[data-screen="signup"],
+body[data-screen="authChoice"] {
+  background: #f4f1ea;
+}
+
 button,
 input {
   font: inherit;
@@ -295,7 +300,8 @@ button {
 }
 
 .flow-screen {
-  min-height: max(100vh, 1120px);
+  min-height: 100vh;
+  height: 100vh;
   overflow: auto;
   background:
     radial-gradient(circle, rgb(255 255 255 / 70%) 1px, transparent 1px),
@@ -1213,13 +1219,24 @@ button {
 }
 
 .freemium-screen {
-  min-height: 100vh;
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+  min-height: max(100vh, 1050px);
   background: #f4f1ea;
   color: #171717;
   padding: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.freemium-screen::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: #f4f1ea;
 }
 
 .freemium-shell {
@@ -1246,12 +1263,20 @@ button {
 }
 
 .freemium-hero h1 {
-  max-width: 710px;
+  max-width: 760px;
   margin: 0;
   font-size: clamp(48px, 7vw, 86px);
   line-height: 0.95;
   letter-spacing: 0;
   font-weight: 700;
+}
+
+.freemium-lede {
+  max-width: 640px;
+  margin: 24px 0 0;
+  color: #4b4741;
+  font-size: 22px;
+  line-height: 1.35;
 }
 
 .hero-stat {
@@ -1340,6 +1365,17 @@ button {
   color: #4e4a44;
   line-height: 1.4;
   font-size: 13px;
+}
+
+.account-access {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #dedbd4;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 @media (max-width: 980px) {

@@ -60,7 +60,7 @@ const scenarios = {
     consentNeeded: false,
   },
   agentsConsent: {
-    label: "Agents active, consent needed",
+    label: "Agents enabled but no MCP (v2)",
     email: "maria@contoso.com",
     tenant: "Contoso",
     tenants: ["Contoso"],
@@ -99,11 +99,19 @@ const scenarioShortLabels = {
   mcpEnabled: "Existing customer",
   multiTenant: "Rare: tenants",
   emailAuth: "Email auth",
-  agentsActive: "Agents ok",
-  agentsConsent: "Rare: consent",
+  agentsConsent: "Agents enabled but no MCP (v2)",
   noAgents: "No agents",
   unknown: "Free product",
 };
+
+const visibleScenarioIds = [
+  "mcpEnabled",
+  "multiTenant",
+  "emailAuth",
+  "agentsConsent",
+  "noAgents",
+  "unknown",
+];
 
 const app = document.querySelector("#app");
 const validScreens = new Set([
@@ -190,11 +198,11 @@ function flowScreen() {
         <div class="flow-title">MCP-MVP2</div>
 
         <article class="flow-node mini-card email-known" style="left: 32px; top: 260px;">
-          <h2>Connect Templafy</h2>
-          <p>Enter your email once.</p>
+          <h2>Templafy landing</h2>
+          <p>One email entry for access or free product.</p>
           <label>Email</label>
           <div class="mini-input">jane@acme.com</div>
-          <button type="button" data-action="authChoice">Next</button>
+          <button type="button" data-action="authChoice">Access Templafy</button>
           <button class="mini-secondary" type="button" data-scenario="unknown" data-screen="signup">Start free product</button>
         </article>
 
@@ -236,12 +244,12 @@ function flowScreen() {
         </article>
 
         <article class="flow-note decision-note" style="left: 1195px; top: 310px;">
-          After sign-in: MCP enabled connects directly. If Document Agents are active, continue and notify CS. Otherwise go to free product.
+          After sign-in: MCP enabled connects directly. Agents enabled but no MCP (v2) asks for consent only if needed. Otherwise go to free product.
         </article>
 
         <article class="flow-node consent-mini" style="left: 1600px; top: 170px;">
-          <h2>Templafy Connector is requesting access</h2>
-          <p>Create branded documents and presentations.</p>
+          <h2>Agents enabled but no MCP (v2)</h2>
+          <p>Review connector access only if consent is missing.</p>
           <button type="button" data-scenario="agentsConsent" data-screen="consent">Allow access</button>
         </article>
 
@@ -409,40 +417,7 @@ function authShell(content, notes = []) {
 }
 
 function authChoiceScreen() {
-  authShell(`
-    <div class="auth-card narrow">
-      <h1 class="auth-title">Access Templafy</h1>
-      <p class="auth-subtitle">Enter your email address to continue.</p>
-      <form class="form" data-form="identify">
-        <div class="field">
-          <label for="identify-email">Email address</label>
-          <input id="identify-email" name="email" type="email" value="${state.email}" placeholder="Enter your email address" autocomplete="email" />
-        </div>
-        <button class="button" type="submit">Access Templafy</button>
-      </form>
-      <div class="auth-divider"></div>
-      <div class="signup-nudge">
-        <div>
-          <h2>New to Templafy?</h2>
-          <p>Try the free PowerPoint agent and create your first deck in minutes.</p>
-        </div>
-        <button class="button-secondary" type="button" data-action="signup">Start free product</button>
-      </div>
-    </div>
-  `, [
-    {
-      title: "What happens here",
-      body: "This mirrors the real Templafy identification page: email first, then the backend decides which tenant and login method applies.",
-    },
-    {
-      title: "Prototype paths",
-      body: `<p>Most users are either an existing customer or a new free-product user. Rare branches are labeled.</p><div class="scenario-buttons">
-        ${Object.entries(scenarios)
-          .map(([id]) => `<button data-scenario="${id}">${scenarioShortLabels[id]}</button>`)
-          .join("")}
-      </div>`,
-    },
-  ]);
+  signupScreen();
 }
 
 function selectTenantScreen() {
@@ -591,7 +566,8 @@ function signupScreen() {
             <span class="logo-tile"><img src="${ASSETS.logo}" alt="Templafy" /></span>
             <strong>templafy</strong>
           </div>
-          <h1>Create your next PowerPoint in minutes</h1>
+          <h1>Create PowerPoints or access Templafy</h1>
+          <p class="freemium-lede">Use your work email to start the free PowerPoint agent or continue to your organization's Templafy tenant.</p>
           <div class="hero-stat">
             <strong>105 125 m</strong>
             <span>documents created yearly with Templafy</span>
@@ -601,15 +577,14 @@ function signupScreen() {
           </div>
         </div>
         <aside class="free-product-card">
-          <h2>Go to free product</h2>
-          <p class="free-product-subtitle">No credit card required. We will use the email you already entered.</p>
+          <h2>Get started with Templafy</h2>
+          <p class="free-product-subtitle">Enter your work email once. Existing customers continue to their tenant; new users can start the free product.</p>
           <form class="form" data-form="signup">
-            <div class="known-email-card">
-              <span>Email</span>
-              <strong>${email}</strong>
-              <button class="link" type="button" data-action="authChoice">Use another email</button>
+            <div class="field landing-email-field">
+              <label for="landing-email">Email</label>
+              <input id="landing-email" name="email" type="email" value="${email}" placeholder="Enter your work email" autocomplete="email" />
             </div>
-            <button class="button" type="submit">Continue with email</button>
+            <button class="button" type="submit">Start free product</button>
             <div class="provider-grid">
               <button class="button-secondary" type="button" data-action="providerSignup">Continue with Microsoft</button>
               <button class="button-secondary" type="button" data-action="providerSignup">Continue with Google</button>
@@ -619,9 +594,9 @@ function signupScreen() {
               <span>I accept the Terms of Service and Privacy Policy. I understand that I consent to receive marketing communications, and that I can unsubscribe at any time. *</span>
             </label>
           </form>
-          <div class="link-row" style="margin-top: 18px; justify-content: center;">
+          <div class="account-access">
             <span>Already have an account?</span>
-            <button class="link" type="button" data-action="authChoice">Access Templafy</button>
+            <button class="link" type="button" data-action="accessTemplafy">Access Templafy</button>
           </div>
         </aside>
       </section>
@@ -719,8 +694,8 @@ function tenantCheckNotes(scenario) {
   notes.push({
     title: "Preview outcomes",
     body: `<div class="scenario-buttons">
-      ${Object.entries(scenarios)
-        .map(([id]) => `<button data-scenario="${id}">${scenarioShortLabels[id]}</button>`)
+      ${visibleScenarioIds
+        .map((id) => `<button data-scenario="${id}">${scenarioShortLabels[id]}</button>`)
         .join("")}
     </div>`,
   });
@@ -779,6 +754,27 @@ function resolveScreen() {
   }
 
   setScreen("connected");
+}
+
+function continueFromResolvedEmail(email, fallbackScreen = "signup") {
+  const scenario = chooseScenarioFromEmail(email);
+  const nextScreen = nextAuthScreen(scenario);
+
+  if (nextScreen === "signup") {
+    setScreen(fallbackScreen, {
+      scenario: "unknown",
+      selectedTenant: scenarios.unknown.tenant,
+      consentNeeded: false,
+    });
+    return;
+  }
+
+  if (scenario.tenants && scenario.tenants.length > 1) {
+    setScreen("selectTenant");
+    return;
+  }
+
+  setScreen(nextScreen);
 }
 
 function nextAuthScreen(scenario) {
@@ -927,6 +923,7 @@ function forgotScreen() {
 }
 
 function render() {
+  document.body.dataset.screen = state.screen;
   const screens = {
     flow: flowScreen,
     directory: directoryScreen,
@@ -980,7 +977,8 @@ document.addEventListener("click", (event) => {
   if (action === "sso") setScreen("sso");
   if (action === "tenantCheck") setScreen("tenantCheck");
   if (action === "signup") setScreen("signup", { scenario: "unknown", email: captureVisibleEmail(), selectedTenant: scenarios.unknown.tenant, consentNeeded: false });
-  if (action === "providerSignup") setScreen("inbox", { scenario: "unknown", email: captureVisibleEmail(), selectedTenant: scenarios.unknown.tenant, consentNeeded: false });
+  if (action === "accessTemplafy") continueFromResolvedEmail(captureVisibleEmail());
+  if (action === "providerSignup") continueFromResolvedEmail(captureVisibleEmail(), "inbox");
   if (action === "forgot") setScreen("forgot");
   if (action === "profile") setScreen("profile", { scenario: "unknown", email: state.email || scenarios.unknown.email, selectedTenant: scenarios.unknown.tenant, consentNeeded: false });
   if (action === "verifyEmail") setScreen("connected", { scenario: "unknown", selectedTenant: scenarios.unknown.tenant, consentNeeded: false });
@@ -996,11 +994,7 @@ document.addEventListener("submit", (event) => {
 
   if (formType === "signup") {
     const input = form.querySelector("input[type='email']");
-    state.email = input?.value || state.email || scenarios.unknown.email;
-    state.scenario = "unknown";
-    state.selectedTenant = scenarios.unknown.tenant;
-    state.consentNeeded = false;
-    setScreen("inbox");
+    continueFromResolvedEmail(input?.value || state.email || scenarios.unknown.email, "inbox");
     return;
   }
 
@@ -1020,17 +1014,7 @@ document.addEventListener("submit", (event) => {
   }
 
   if (formType === "identify") {
-    const scenario = chooseScenarioFromEmail(state.email);
-    const nextScreen = nextAuthScreen(scenario);
-    if (nextScreen === "signup") {
-      setScreen("signup", { scenario: "unknown", selectedTenant: scenarios.unknown.tenant, consentNeeded: false });
-      return;
-    }
-    if (scenario.tenants && scenario.tenants.length > 1) {
-      setScreen("selectTenant");
-      return;
-    }
-    setScreen(nextScreen);
+    continueFromResolvedEmail(state.email);
     return;
   }
 
